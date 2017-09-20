@@ -1,0 +1,8 @@
+{
+  "editor.formatOnSave": true,
+  "prettier.eslintIntegration": true,
+  "prettier.printWidth": 120,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "es5",
+  "files.autoSave": "afterDelay"
+}
