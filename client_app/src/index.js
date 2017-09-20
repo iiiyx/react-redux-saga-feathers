@@ -3,33 +3,25 @@ import ReactDOM from 'react-dom';
 
 import './index.css';
 
-import App from './App';
-import CardList from './components/CardList';
-import Card from './components/Card';
+import App from './components/App';
+// import CardList from './components/CardList';
+// import Card from './components/Card';
 
-import { Router, Route, IndexRoute } from 'react-router';
 import { Provider } from 'react-redux';
-import store, { history } from './store';
+import { createStore } from 'redux';
 import registerServiceWorker from './registerServiceWorker';
 
-const router = (
-  <Provider store={store}>
-    <Router history={history}>
-      <Route path="/" component={App}>
-        <IndexRoute component={CardList} />
-        <Route path="/card/:id" component={Card} />
-      </Route>
-    </Router>
-  </Provider>
+import reducer from './reducers';
+const store = createStore(
+  reducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
 );
 
-// app.authenticate().then((user) => {
-//   store.dispatch(authGood(user));
-//   ReactDOM.render(
-//     router,
-//     document.getElementById('root')
-//   );
-// }, () => {
-ReactDOM.render(router, document.getElementById('root'));
-// });
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById('root'),
+);
+
 registerServiceWorker();
