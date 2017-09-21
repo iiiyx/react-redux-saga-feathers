@@ -53,7 +53,6 @@ class App extends Component {
         <div>
           <input
             type="text"
-            // value={this.state.trackFilter}
             onChange={this.changeFilter.bind(this)}
             ref={input => {
               this.searchInput = input;
