@@ -1,0 +1,59 @@
+.ui.image {
+  width: 100%;
+}
+.handled {
+  cursor: pointer;
+}
+.margined {
+  margin: 5px !important;
+}
+.flex {
+  display: flex;
+  justify-content: space-between;
+}
+.flex-child-left {
+  flex: 0 1 400px;
+}
+.flex-child-right {
+  flex: 1 1 400px;
+}
+.ui.segment > .ui.form > .inline.fields {
+  margin-bottom: 0;
+  line-height: 2em;
+}
+.main-list-item {
+  width: 200px !important;
+}
+.imageloader.loading.ui.image {
+  height: 292px !important;
+  border-radius: inherit;
+}
+.scroller {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 100px;
+  cursor: pointer;
+  padding-top: 36px;
+  text-align: center;
+  transition-duration: 0.2s;
+  transition-timing-function: linear;
+  transition-delay: 0s;
+}
+.scroller > .icon {
+  margin: 0 !important;
+}
+@media (max-width: 1199px) {
+  .scroller {
+    height: 100px;
+    border-radius: 50%;
+  }
+}
+@media (min-width: 1200px) {
+  .scroller {
+    bottom: 0;
+  }
+}
+.scroller:hover {
+  background-color: rgba(200, 200, 200, 0.7);
+}

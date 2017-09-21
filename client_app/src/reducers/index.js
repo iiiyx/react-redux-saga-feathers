@@ -1,11 +1,13 @@
 import { combineReducers } from 'redux';
+import { routerReducer } from 'react-router-redux';
 
-import tracks from './tracks';
-import playlists from './playlists';
-import trackFilter from './trackFilter';
+import movies from './movies';
+import currMovie from './currMovie';
 
-export default combineReducers({
-  tracks,
-  playlists,
-  trackFilter,
+const rootReducer = combineReducers({
+  currMovie,
+  movies,
+  routing: routerReducer,
 });
+
+export default rootReducer;

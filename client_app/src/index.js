@@ -1,27 +1,53 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import { Route } from 'react-router';
+import createHistory from 'history/createBrowserHistory';
+import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
+import createSagaMiddleware from 'redux-saga';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
-import './index.css';
+import feathers from 'feathers-client';
+// To use REST instead of WS uncomment superagent and rest and comment io
+// import superagent from 'superagent';
+// import rest from 'feathers-rest/client';
+import io from 'socket.io-client';
+
+import mySaga from './sagas/sagas';
+import reducers from './reducers';
+
+import './styles/index.css';
 
 import App from './components/App';
-// import CardList from './components/CardList';
-// import Card from './components/Card';
 
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import registerServiceWorker from './registerServiceWorker';
+const history = createHistory();
 
-import reducer from './reducers';
+const middleware = routerMiddleware(history);
+const sagaMiddleware = createSagaMiddleware();
+
 const store = createStore(
-  reducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+  reducers,
+  composeWithDevTools(applyMiddleware(middleware, sagaMiddleware)),
 );
+
+const host = 'http://localhost:3031';
+const socket = io(host);
+
+export const app = feathers()
+  .configure(feathers.socketio(socket))
+  // .superagent(superagent))
+  // .configure(feathers.rest(host).superagent(superagent))
+  .configure(feathers.hooks())
+  .configure(feathers.authentication({ storage: window.localStorage }));
+
+sagaMiddleware.run(mySaga, app);
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <ConnectedRouter history={history}>
+      <Route path="/" component={App} />
+    </ConnectedRouter>
   </Provider>,
   document.getElementById('root'),
 );
-
-registerServiceWorker();

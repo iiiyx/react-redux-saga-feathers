@@ -5,3 +5,9 @@
 .App-button {
   margin-left: 10px;
 }
+.alike {
+  color: #4183c4 !important;
+}
+.alike:hover {
+  color: #1e70bf !important;
+}

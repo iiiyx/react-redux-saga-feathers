@@ -1,10 +1,10 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Смотри ТУТ!",
+  "name": "Все новые сериалы и фильмы",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "192x192",
+      "src": "150.png",
+      "sizes": "150x150",
       "type": "image/png"
     }
   ],

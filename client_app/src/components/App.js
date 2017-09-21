@@ -1,99 +1,126 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Route, Switch } from 'react-router';
+import { ConnectedRouter } from 'react-router-redux';
+
+import * as actionCreators from '../actions';
+import { getQueryTypes } from '../helpers/Utils';
+import { Icon, Divider, Image, Header, Container } from 'semantic-ui-react';
 
 import '../styles/App.css';
 
+import Scroller from './Scroller';
+import NavBar from './NavBar';
+import MovieList from './MovieList';
+import SingleMovie from './SingleMovie';
+
+// const toMain = () => (window.location.href = '/');
+const loadData = props => {
+  const currPage = 0;
+  const searchText =
+    props.match.params.text != null
+      ? decodeURIComponent(props.match.params.text)
+      : null;
+  props.fetchMovies(
+    searchText,
+    currPage,
+    getQueryTypes(props.history.location.search),
+    false,
+  );
+};
+
 class App extends Component {
-  addTrack(e) {
+  toMain(e) {
     e.preventDefault();
-    console.log('addTrack', this.trackInput.value);
-    const nextIdx = this.props.tracks.length
-      ? this.props.tracks[this.props.tracks.length - 1].idx + 1
-      : 0;
-    this.props.onAddTrack({
-      idx: nextIdx,
-      name: this.trackInput.value,
-    });
-    this.trackInput.value = '';
+    this.props.history.push('/');
   }
 
-  deleteTrack(e) {
-    e.preventDefault();
-    const idx = +e.target.getAttribute('data-key');
-    console.log('delete track', idx);
-    this.props.onDeleteTrack(idx);
+  constructor(props) {
+    super(props);
+    this.toMain = this.toMain.bind(this);
   }
 
-  changeFilter() {
-    this.props.onFindTrack(this.searchInput.value);
+  componentWillMount() {
+    loadData(this.props);
   }
 
-  clearSearch() {
-    this.searchInput.value = '';
-    this.changeFilter();
+  componentWillReceiveProps(nextProps) {
+    if (
+      nextProps.location.pathname !== this.props.location.pathname ||
+      nextProps.location.search !== this.props.location.search
+    ) {
+      loadData(nextProps);
+    }
   }
 
   render() {
-    console.log(this.props.tracks);
     return (
-      <div>
-        <form onSubmit={this.addTrack.bind(this)}>
-          <input
-            type="text"
-            ref={input => {
-              this.trackInput = input;
-            }}
-          />
-          <input
-            type="submit"
-            onClick={this.addTrack.bind(this)}
-            value="Add track"
-          />
-        </form>
-        <div>
-          <input
-            type="text"
-            onChange={this.changeFilter.bind(this)}
-            ref={input => {
-              this.searchInput = input;
-            }}
-          />
-          <button onClick={this.clearSearch.bind(this)}>X</button>
-        </div>
-        <ul>
-          {this.props.tracks.map(track => (
-            <li key={track.idx}>
-              <span>{track.name}</span>
-              <button
-                className="App-button"
-                data-key={track.idx}
-                onClick={this.deleteTrack.bind(this)}>
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Container>
+        <Divider hidden />
+        <a href="/" onClick={this.toMain}>
+          <Header as="h1" textAlign="center">
+            <Image shape="circular" src="/150.png" />{' '}
+            <Header.Content className="alike">
+              Смотри ТУТ!
+              <Header.Subheader>Все новые сериалы и фильмы</Header.Subheader>
+            </Header.Content>
+          </Header>
+        </a>
+        <Divider hidden />
+        <NavBar {...this.props} />
+        <ConnectedRouter history={this.props.history}>
+          <Switch>
+            <Route
+              exact
+              path="/"
+              render={() => <MovieList {...this.props} />}
+            />
+            <Route
+              path={
+                '/%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD/:type/:name/:id'
+              }
+              render={() => <SingleMovie {...this.props} />}
+            />
+            <Route
+              path={'/смотреть-онлайн/:type/:name/:id'}
+              render={() => <SingleMovie {...this.props} />}
+            />
+            <Route
+              path="/%D0%B8%D1%81%D0%BA%D0%B0%D1%82%D1%8C/:text"
+              render={() => <MovieList {...this.props} />}
+            />
+            <Route
+              path="/искать/:text"
+              render={() => <MovieList {...this.props} />}
+            />
+          </Switch>
+        </ConnectedRouter>
+        <Divider hidden />
+        <Header
+          as="h5"
+          textAlign="center"
+          content="Inspired by ReactJS | 2017"
+        />
+        <Divider hidden />
+        <Scroller showUnder={160}>
+          <Icon name="arrow up" size="big" />
+        </Scroller>
+      </Container>
     );
   }
 }
 
-export default connect(
-  state => ({
-    tracks: state.tracks.filter(track =>
-      track.name.toLowerCase().startsWith(state.trackFilter.toLowerCase()),
-    ),
-    playlists: state.playlists,
-  }),
-  dispath => ({
-    onAddTrack: trackName => {
-      dispath({ type: 'ADD_TRACK', payload: trackName });
-    },
-    onDeleteTrack: idx => {
-      dispath({ type: 'DELETE_TRACK', payload: idx });
-    },
-    onFindTrack: name => {
-      dispath({ type: 'FIND_TRACK', payload: name });
-    },
-  }),
-)(App);
+function mapStateToProps({ series, movies, currMovie }) {
+  return {
+    series,
+    movies,
+    currMovie,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(actionCreators, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
