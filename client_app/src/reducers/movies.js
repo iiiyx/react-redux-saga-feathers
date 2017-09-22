@@ -17,6 +17,7 @@ function movies(state = { data: [] }, action) {
       return action.movies;
 
     case 'MOVIES_FETCH_REQUESTED':
+      if (action.isMore) return state;
       return {
         ...state,
         isFetching: true,

@@ -23,51 +23,20 @@ function findPos(obj) {
 }
 
 class SingleMovie extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { movie: null };
-  }
-
-  componentWillMount() {
-    if (
-      this.props.movies &&
-      this.props.movies.data &&
-      this.props.movies.data.length
-    ) {
-      for (let movieI in this.props.movies.data) {
-        let movie = this.props.movies.data[movieI];
-        if (movie.sid === this.props.match.params.id) {
-          this.setState({ movie });
-          return;
-        }
-      }
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (
-      this.state.movie &&
-      this.state.movie.isFetching &&
-      nextProps.currMovie != null &&
-      !nextProps.currMovie.isFetching
-    )
-      this.setState({ movie: nextProps.currMovie });
-  }
-
   componentDidMount() {
     const topNav = document.getElementsByClassName('topNav')[0];
     if (topNav) {
       const scrollTo = +topNav.offsetHeight + findPos(topNav);
       window.scrollTo(0, scrollTo);
     }
-    if (this.state.movie == null) {
-      this.setState({ movie: { isFetching: true } });
-      this.props.fetchMovie(this.props.match.params.id);
-    }
+    // if (this.state.movie == null) {
+    //   this.setState({ movie: { isFetching: true } });
+    //   this.props.fetchMovie(this.props.match.params.id);
+    // }
   }
 
   render() {
-    const movie = this.state.movie;
+    const movie = this.props.currMovie;
     if (movie == null || (movie.sid == null && !movie.isFetching))
       return (
         <Message

@@ -9,17 +9,25 @@ import AppConsts from '../helpers/Consts';
 // import { browserHistory } from 'react-router'
 
 class MovieList extends Component {
-  loadMore = () => {
+  constructor(props) {
+    super(props);
+    this.loadMore = this.loadMore.bind(this);
+  }
+
+  loadMore() {
+    if (this.props.movies && this.props.movies.isFetching) return;
     const currPage = this.props.movies.skip / AppConsts.limit + 1;
-    const isSearch = this.props.match.params.text != null;
-    localStorage.prevpage = currPage;
+    const search =
+      this.props.params.text != null
+        ? decodeURIComponent(this.props.params.text)
+        : null;
     this.props.fetchMovies(
-      isSearch ? decodeURIComponent(this.props.match.params.text) : null,
+      search,
       currPage,
       this.props.location.query.types || null,
       true,
     );
-  };
+  }
 
   render() {
     if (
@@ -30,7 +38,8 @@ class MovieList extends Component {
       return (
         <div>
           <Dimmer
-            active={this.props.movies && this.props.movies.isFetching === true}>
+            active={this.props.movies && this.props.movies.isFetching === true}
+            page>
             <Loader>Загрузка...</Loader>
           </Dimmer>
           <InfiniteScroll
@@ -41,9 +50,7 @@ class MovieList extends Component {
             }
             loader={<LoadSpinner />}>
             <Card.Group>
-              {this.props.movies.data.map((movie, i) =>
-                MovieCard(movie, i, this.props.history.push),
-              )}
+              {this.props.movies.data.map((movie, i) => MovieCard(movie, i))}
             </Card.Group>
           </InfiniteScroll>
         </div>

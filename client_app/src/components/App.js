@@ -1,57 +1,67 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Route, Switch } from 'react-router';
-import { ConnectedRouter } from 'react-router-redux';
+import { browserHistory } from 'react-router';
 
-import * as actionCreators from '../actions';
-import { getQueryTypes } from '../helpers/Utils';
 import { Icon, Divider, Image, Header, Container } from 'semantic-ui-react';
 
-import '../styles/App.css';
+import * as actionCreators from '../actions';
 
 import Scroller from './Scroller';
 import NavBar from './NavBar';
-import MovieList from './MovieList';
-import SingleMovie from './SingleMovie';
 
-// const toMain = () => (window.location.href = '/');
-const loadData = props => {
-  const currPage = 0;
-  const searchText =
-    props.match.params.text != null
-      ? decodeURIComponent(props.match.params.text)
-      : null;
-  props.fetchMovies(
-    searchText,
-    currPage,
-    getQueryTypes(props.history.location.search),
-    false,
-  );
-};
+import '../styles/App.css';
+
+function loadMovie(props) {
+  const newMovie =
+    props.movies &&
+    props.movies.length &&
+    props.movies.find(movie => movie.sid === props.params.id);
+  if (newMovie) {
+    props.currMovie = newMovie;
+    return;
+  }
+  props.fetchMovie(props.params.id);
+}
+
+function loadMovieList(props) {
+  const search =
+    props.params.text != null ? decodeURIComponent(props.params.text) : null;
+  props.fetchMovies(search, 0, props.location.query.types || null, false);
+}
 
 class App extends Component {
   toMain(e) {
     e.preventDefault();
-    this.props.history.push('/');
-  }
-
-  constructor(props) {
-    super(props);
-    this.toMain = this.toMain.bind(this);
+    browserHistory.push('/');
+    window.scrollTo(0, 0);
   }
 
   componentWillMount() {
-    loadData(this.props);
+    this.loadData(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
     if (
+      nextProps.location.query.types !== this.props.location.query.types ||
       nextProps.location.pathname !== this.props.location.pathname ||
-      nextProps.location.search !== this.props.location.search
+      nextProps.params.text !== this.props.params.text
+    )
+      this.loadData(nextProps);
+  }
+
+  loadData(props) {
+    if (
+      props.location.pathname.startsWith('/смотерть-онлайн/') ||
+      props.location.pathname.startsWith(
+        '/%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD/',
+      )
     ) {
-      loadData(nextProps);
+      loadMovie(props);
+      return;
     }
+    loadMovieList(props);
+    return;
   }
 
   render() {
@@ -69,33 +79,7 @@ class App extends Component {
         </a>
         <Divider hidden />
         <NavBar {...this.props} />
-        <ConnectedRouter history={this.props.history}>
-          <Switch>
-            <Route
-              exact
-              path="/"
-              render={() => <MovieList {...this.props} />}
-            />
-            <Route
-              path={
-                '/%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD/:type/:name/:id'
-              }
-              render={() => <SingleMovie {...this.props} />}
-            />
-            <Route
-              path={'/смотреть-онлайн/:type/:name/:id'}
-              render={() => <SingleMovie {...this.props} />}
-            />
-            <Route
-              path="/%D0%B8%D1%81%D0%BA%D0%B0%D1%82%D1%8C/:text"
-              render={() => <MovieList {...this.props} />}
-            />
-            <Route
-              path="/искать/:text"
-              render={() => <MovieList {...this.props} />}
-            />
-          </Switch>
-        </ConnectedRouter>
+        {React.cloneElement(this.props.children, this.props)}
         <Divider hidden />
         <Header
           as="h5"
