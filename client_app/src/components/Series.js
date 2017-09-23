@@ -1,4 +1,13 @@
 import React, { Component } from 'react';
+import { browserHistory } from 'react-router';
+import { connect } from 'react-redux';
+
+import {
+  buildSerieUri,
+  seasonRegx,
+  episodeRegx,
+  findElementPos,
+} from '../helpers/Utils';
 
 import {
   Container,
@@ -12,10 +21,33 @@ import {
 
 import Player from './Player';
 
+const findIndexOfSerie = props => {
+  if (!props.params.season || !props.params.episode) return 0;
+  const seasonUriMatch = props.params.season.match(seasonRegx);
+  const episodeUriMatch = props.params.episode.match(episodeRegx);
+  if (
+    !seasonUriMatch ||
+    seasonUriMatch.length < 2 ||
+    !episodeUriMatch ||
+    episodeUriMatch < 2
+  )
+    return 0;
+  const i = props.movie.moonall_sers.findIndex(
+    serie => serie.s === +seasonUriMatch[1] && serie.e === +episodeUriMatch[1],
+  );
+  return i === -1 ? 0 : i;
+};
+
 class Series extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { i: 0 };
+  getOnClickFunction(serie) {
+    return e => {
+      // const player = document.getElementById('player');
+      // if (player) {
+      //   const scrollTo = +player.offsetHeight + findElementPos(player);
+      //   window.scrollTo(0, scrollTo);
+      // }
+      browserHistory.push(buildSerieUri(this.props.params, serie));
+    };
   }
 
   render() {
@@ -23,7 +55,8 @@ class Series extends Component {
       this.props.movie &&
       this.props.movie.moonall_sers &&
       this.props.movie.moonall_sers.length
-    )
+    ) {
+      const current = findIndexOfSerie(this.props);
       return (
         <div>
           <Segment>
@@ -31,9 +64,9 @@ class Series extends Component {
             <Container textAlign="justified">
               {this.props.movie.moonall_sers.map((serie, i) => (
                 <Button
-                  onClick={e => this.setState({ i: i })}
+                  onClick={this.getOnClickFunction(serie)}
                   className="margined"
-                  primary={i === this.state.i}
+                  primary={i === current}
                   key={i}>
                   {serie.s} - {serie.e}
                 </Button>
@@ -41,9 +74,10 @@ class Series extends Component {
             </Container>
           </Segment>
           <Divider hidden />
-          <Player sid={this.props.movie.moonall_sers[this.state.i].eid} />
+          <Player sid={this.props.movie.moonall_sers[current].eid} />
         </div>
       );
+    }
     return (
       <Segment>
         <Dimmer
@@ -61,4 +95,6 @@ class Series extends Component {
   }
 }
 
-export default Series;
+const mapStateToProps = (state, ownProps) => ({ ...ownProps.data });
+
+export default connect(mapStateToProps)(Series);

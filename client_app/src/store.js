@@ -1,6 +1,4 @@
 import { createStore, applyMiddleware } from 'redux';
-import { browserHistory } from 'react-router';
-import { syncHistoryWithStore } from 'react-router-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
 
@@ -31,7 +29,5 @@ export const app = feathers()
   .configure(feathers.authentication({ storage: window.localStorage }));
 
 sagaMiddleware.run(mySaga, app);
-
-export const history = syncHistoryWithStore(browserHistory, store);
 
 export default store;

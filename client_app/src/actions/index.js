@@ -14,10 +14,3 @@ export function fetchMovies(text, page, types, isMore) {
     isMore,
   };
 }
-
-export function fetchSeries(sid) {
-  return {
-    type: 'SERIES_FETCH_REQUESTED',
-    sid,
-  };
-}

@@ -5,8 +5,6 @@
   "dependencies": {
     "detect-passive-events": "^1.0.2",
     "feathers-client": "^2.4.0",
-    "history": "^4.7.2",
-    "qs": "^6.5.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-imageloader": "^2.1.0",

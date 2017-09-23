@@ -3,16 +3,6 @@ import { fork, call, put } from 'redux-saga/effects';
 
 import { fetchMovies, fetchMovie } from '../services/api';
 
-// import { getQueryTypes } from '../helpers/Utils';
-
-// function* fetchDataByPath(feathersApp) {
-//   yield* takeEvery(
-//     '@@router/LOCATION_CHANGE',
-//     callFetchDataByPath,
-//     feathersApp,
-//   );
-// }
-
 function* fetchMovieSaga(feathersApp) {
   yield* takeEvery('MOVIE_FETCH_REQUESTED', callFetchMovie, feathersApp);
 }
@@ -20,18 +10,6 @@ function* fetchMovieSaga(feathersApp) {
 function* fetchMoviesSaga(feathersApp) {
   yield* takeEvery('MOVIES_FETCH_REQUESTED', callFetchMovies, feathersApp);
 }
-
-// function* callFetchDataByPath(feathersApp, action) {
-//   console.log('callFetchDataByPath', action);
-//   if (action.payload.pathname === '/') {
-//     const types = getQueryTypes(action.payload.search);
-//     const movies = yield call(fetchMovies, feathersApp, null, 0, types);
-//     yield put({
-//       type: 'MOVIES_FETCH_DONE',
-//       movies,
-//     });
-//   }
-// }
 
 function* callFetchMovie(feathersApp, action) {
   const movie = yield call(fetchMovie, feathersApp, action.id);
@@ -53,9 +31,5 @@ function* callFetchMovies(feathersApp, action) {
 }
 
 export default function* root(feathersApp) {
-  yield [
-    fork(fetchMovieSaga, feathersApp),
-    fork(fetchMoviesSaga, feathersApp),
-    // fork(fetchDataByPath, feathersApp),
-  ];
+  yield [fork(fetchMovieSaga, feathersApp), fork(fetchMoviesSaga, feathersApp)];
 }

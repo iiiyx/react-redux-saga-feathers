@@ -12,18 +12,6 @@ import NavBar from './NavBar';
 
 import '../styles/App.css';
 
-function loadMovie(props) {
-  const newMovie =
-    props.movies &&
-    props.movies.length &&
-    props.movies.find(movie => movie.sid === props.params.id);
-  if (newMovie) {
-    props.currMovie = newMovie;
-    return;
-  }
-  props.fetchMovie(props.params.id);
-}
-
 function loadMovieList(props) {
   const search =
     props.params.text != null ? decodeURIComponent(props.params.text) : null;
@@ -44,22 +32,13 @@ class App extends Component {
   componentWillReceiveProps(nextProps) {
     if (
       nextProps.location.query.types !== this.props.location.query.types ||
-      nextProps.location.pathname !== this.props.location.pathname ||
+      // nextProps.location.pathname !== this.props.location.pathname ||
       nextProps.params.text !== this.props.params.text
     )
       this.loadData(nextProps);
   }
 
   loadData(props) {
-    if (
-      props.location.pathname.startsWith('/смотерть-онлайн/') ||
-      props.location.pathname.startsWith(
-        '/%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD/',
-      )
-    ) {
-      loadMovie(props);
-      return;
-    }
     loadMovieList(props);
     return;
   }
