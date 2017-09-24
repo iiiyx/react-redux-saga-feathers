@@ -18,7 +18,7 @@ const store = createStore(
   composeWithDevTools(applyMiddleware(sagaMiddleware)),
 );
 
-const host = 'http://localhost:3031';
+const host = 'http://smotri-tut.tk';
 const socket = io(host);
 
 export const app = feathers()

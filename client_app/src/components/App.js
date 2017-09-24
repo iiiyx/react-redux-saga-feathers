@@ -23,19 +23,7 @@ import SingleMovie from './SingleMovie';
 
 import '../styles/App.css';
 
-function loadMovieList(props) {
-  const search =
-    props.match.params.text != null
-      ? decodeURIComponent(props.match.params.text)
-      : null;
-  props.fetchMovies(
-    search,
-    0,
-    getQueryTypes(props.location.search) || null,
-    false,
-  );
-}
-
+//TODO: move to Utils
 function pageIsMoviePage(props) {
   const matchObj = path => ({
     path: path,
@@ -55,20 +43,38 @@ class App extends Component {
   }
 
   componentWillMount() {
-    loadMovieList(this.props);
+    this.loadMovieList(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    if (
-      pageIsMoviePage(nextProps) ||
-      pageIsMoviePage(this.props) ||
-      // eslint-disable-next-line
-      (getQueryTypes(nextProps.location.search) == getQueryTypes(this.props.location.search) &&
-        // eslint-disable-next-line
-        nextProps.match.params.text == this.props.match.params.text)
-    )
-      return;
-    loadMovieList(nextProps);
+    const nextPageIsMoviePage = pageIsMoviePage(nextProps);
+    const nextPageDataWasAlreadyFetched =
+      //eslint-disable-next-line
+      getQueryTypes(nextProps.location.search) == this.lastData.types &&
+      //eslint-disable-next-line
+      nextProps.match.params.text == this.lastData.text;
+
+    if (nextPageIsMoviePage || nextPageDataWasAlreadyFetched) return;
+
+    this.loadMovieList(nextProps);
+  }
+
+  loadMovieList(props) {
+    const search =
+      props.match.params.text != null
+        ? decodeURIComponent(props.match.params.text)
+        : null;
+
+    const types = getQueryTypes(props.location.search) || null;
+    const currentPage = 0;
+    const isLoadMore = false;
+
+    props.fetchMovies(search, currentPage, types, isLoadMore);
+
+    this.lastData = {
+      text: props.match.params.text,
+      types,
+    };
   }
 
   toMain(e) {

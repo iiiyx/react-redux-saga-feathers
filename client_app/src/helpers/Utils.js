@@ -75,11 +75,11 @@ export const getUrlDecodedSearchPath = () => {
 };
 
 export const getUrlEncodedEpisodePath = () => {
-  return getUrlEncodedMoviePath + '/:season/:episode';
+  return getUrlEncodedMoviePath() + '/:season/:episode';
 };
 
 export const getUrlDecodedEpisodePath = () => {
-  return getUrlDecodedMoviePath + '/:season/:episode';
+  return getUrlDecodedMoviePath() + '/:season/:episode';
 };
 
 export const getCompiledSearchPath = text => {
