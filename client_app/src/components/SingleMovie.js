@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Route, Switch } from 'react-router-dom';
 
 import {
   Divider,
@@ -17,34 +18,16 @@ import Series from './Series';
 import Player from './Player';
 
 class SingleMovie extends Component {
+  constructor(props) {
+    super(props);
+    console.log(props);
+  }
+
   componentDidMount() {
     const topNav = document.getElementsByClassName('topNav')[0];
     if (topNav) {
       const scrollTo = +topNav.offsetHeight + findElementPos(topNav);
       window.scrollTo(0, scrollTo);
-    }
-  }
-
-  getChildren(movie, props) {
-    if (movie.type.isSer) {
-      const seriesProps = { movie: movie, params: this.props.params };
-      if (
-        props.children &&
-        props.children.props &&
-        props.children.props.children
-      ) {
-        // when season and episode path is specified
-        console.log('cloneElement');
-        return React.cloneElement(props.children.props.children, {
-          data: seriesProps,
-        });
-      } else {
-        // when season and episode path is NOT specified
-        return <Series data={seriesProps} />;
-      }
-    } else {
-      // when "single episode" - odinary movie
-      return <Player sid={movie.sid} />;
     }
   }
 
@@ -114,7 +97,30 @@ class SingleMovie extends Component {
             </Item>
           </Item.Group>
           <Divider hidden />
-          {this.getChildren(movie, this.props)}
+          {movie.type.isSer ? (
+            <Switch>
+              <Route
+                exact
+                path="/%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD/:type/:name/:id"
+                render={({ match }) => <Series {...{ ...this.props, match }} />}
+              />
+              <Route
+                exact
+                path="/смотреть-онлайн/:type/:name/:id"
+                render={({ match }) => <Series {...{ ...this.props, match }} />}
+              />
+              <Route
+                path="/%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD/:type/:name/:id/:season/:episode"
+                render={({ match }) => <Series {...{ ...this.props, match }} />}
+              />
+              <Route
+                path="/смотреть-онлайн/:type/:name/:id/:season/:episode"
+                render={({ match }) => <Series {...{ ...this.props, match }} />}
+              />
+            </Switch>
+          ) : (
+            <Player sid={movie.sid} />
+          )}
         </Segment>
         <Divider hidden />
       </div>
@@ -122,39 +128,23 @@ class SingleMovie extends Component {
   }
 }
 
-// function loadMovie(props) {
-//   const newMovie =
-//     (props.currMovie &&
-//       props.currMovie.sid === props.params.id &&
-//       props.currMovie) ||
-//     (props.movies &&
-//       props.movies.data &&
-//       props.movies.data.length &&
-//       props.movies.data.find(movie => movie.sid === props.params.id));
-//   if (newMovie) {
-//     return newMovie;
-//   }
-//   props.fetchMovie(props.params.id);
-//   return { isFetching: true };
-// }
-
 const mapStateToProps = (state, ownProps) => {
   const newMovie =
     (state.currMovie &&
-      state.currMovie.sid === ownProps.params.id &&
+      state.currMovie.sid === ownProps.match.params.id &&
       state.currMovie) ||
     (state.movies &&
       state.movies.data &&
       state.movies.data.length &&
-      state.movies.data.find(movie => movie.sid === ownProps.params.id));
+      state.movies.data.find(movie => movie.sid === ownProps.match.params.id));
   if (newMovie) {
     return {
       ...ownProps,
       movie: newMovie,
     };
   }
-  if (!state.currMovie || state.currMovie.isFetching)
-    ownProps.fetchMovie(ownProps.params.id);
+  if (!state.currMovie || !state.currMovie.isFetching)
+    ownProps.fetchMovie(ownProps.match.params.id);
   return {
     ...ownProps,
     movie: { isFetching: true },

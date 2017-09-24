@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import { browserHistory } from 'react-router';
 
 import { Button, Segment, Divider, Form, Input } from 'semantic-ui-react';
 
 import { PageTypeEnum, getType } from '../helpers/MovieTypeHelper';
+import { getQueryTypes } from '../helpers/Utils';
 
 class NavBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchStr: props.params.text || '',
+      searchStr: props.match.params.text || '',
     };
     this.types = [];
     const keys = Object.getOwnPropertyNames(PageTypeEnum);
@@ -35,14 +35,17 @@ class NavBar extends Component {
   }
 
   componentWillMount() {
-    this.updateCheckboxes(this.props.location.query.types);
+    this.updateCheckboxes(getQueryTypes(this.props.location.search));
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.searchStr !== nextProps.params.text)
-      this.setState({ searchStr: nextProps.params.text || '' });
-    if (nextProps.location.query.types !== this.props.location.query.types) {
-      this.updateCheckboxes(nextProps.location.query.types);
+    if (this.state.searchStr !== nextProps.match.params.text)
+      this.setState({ searchStr: nextProps.match.params.text || '' });
+    if (
+      getQueryTypes(nextProps.location.search) !==
+      getQueryTypes(this.props.location.search)
+    ) {
+      this.updateCheckboxes(getQueryTypes(nextProps.location.search));
     }
   }
 
@@ -54,16 +57,16 @@ class NavBar extends Component {
       text === ''
         ? '/'
         : `/${encodeURIComponent('искать')}/${encodeURIComponent(text)}`;
-    const types = this.props.location.query.types || '';
-    browserHistory.push(addr + (types !== '' ? '?types=' + types : ''));
+    const types = getQueryTypes(this.props.location.search) || '';
+    this.props.history.push(addr + (types !== '' ? '?types=' + types : ''));
   };
 
   onSearchClear = e => {
     e.preventDefault();
     e.stopPropagation();
     this.setState({ searchStr: '' });
-    const types = this.props.location.query.types || '';
-    browserHistory.push(types !== '' ? '/?types=' + types : '/');
+    const types = getQueryTypes(this.props.location.search) || '';
+    this.props.history.push(types !== '' ? '/?types=' + types : '/');
   };
 
   onSearchChange = e => {
@@ -86,7 +89,7 @@ class NavBar extends Component {
       text === ''
         ? '/'
         : `/${encodeURIComponent('искать')}/${encodeURIComponent(text)}`;
-    browserHistory.push(addr + (types !== '' ? '?types=' + types : ''));
+    this.props.history.push(addr + (types !== '' ? '?types=' + types : ''));
   };
 
   createCheckBox = type => (
@@ -114,7 +117,7 @@ class NavBar extends Component {
               name="submit"
               disabled={
                 !this.state.searchStr ||
-                this.state.searchStr === this.props.params.text
+                this.state.searchStr === this.props.match.params.text
               }
               type="submit"
               icon="search"
@@ -122,7 +125,7 @@ class NavBar extends Component {
             />
             <Button
               name="cancel"
-              disabled={!this.props.params.text}
+              disabled={!this.props.match.params.text}
               type="cancel"
               onClick={this.onSearchClear}
               icon="close"

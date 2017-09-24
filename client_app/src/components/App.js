@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { browserHistory } from 'react-router';
+import { Route, Switch } from 'react-router-dom';
 
 import { Icon, Divider, Image, Header, Container } from 'semantic-ui-react';
 
@@ -9,38 +9,21 @@ import * as actionCreators from '../actions';
 
 import Scroller from './Scroller';
 import NavBar from './NavBar';
+import MovieList from './MovieList';
+import SingleMovie from './SingleMovie';
 
 import '../styles/App.css';
 
-function loadMovieList(props) {
-  const search =
-    props.params.text != null ? decodeURIComponent(props.params.text) : null;
-  props.fetchMovies(search, 0, props.location.query.types || null, false);
-}
-
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.toMain = this.toMain.bind(this);
+  }
+
   toMain(e) {
     e.preventDefault();
-    browserHistory.push('/');
+    this.props.history.push('/');
     window.scrollTo(0, 0);
-  }
-
-  componentWillMount() {
-    this.loadData(this.props);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (
-      nextProps.location.query.types !== this.props.location.query.types ||
-      // nextProps.location.pathname !== this.props.location.pathname ||
-      nextProps.params.text !== this.props.params.text
-    )
-      this.loadData(nextProps);
-  }
-
-  loadData(props) {
-    loadMovieList(props);
-    return;
   }
 
   render() {
@@ -58,7 +41,29 @@ class App extends Component {
         </a>
         <Divider hidden />
         <NavBar {...this.props} />
-        {React.cloneElement(this.props.children, this.props)}
+        <Switch>
+          <Route exact path="/" render={() => <MovieList {...this.props} />} />
+          <Route
+            path="/%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD/:type/:name/:id"
+            render={({ match }) => (
+              <SingleMovie {...{ ...this.props, match }} />
+            )}
+          />
+          <Route
+            path="/смотреть-онлайн/:type/:name/:id"
+            render={({ match }) => (
+              <SingleMovie {...{ ...this.props, match }} />
+            )}
+          />
+          <Route
+            path="/%D0%B8%D1%81%D0%BA%D0%B0%D1%82%D1%8C/:text"
+            render={({ match }) => <MovieList {...{ ...this.props, match }} />}
+          />
+          <Route
+            path="/искать/:text"
+            render={({ match }) => <MovieList {...{ ...this.props, match }} />}
+          />
+        </Switch>
         <Divider hidden />
         <Header
           as="h5"
@@ -74,12 +79,8 @@ class App extends Component {
   }
 }
 
-function mapStateToProps({ series, movies, currMovie }) {
-  return {
-    series,
-    movies,
-    currMovie,
-  };
+function mapStateToProps(state) {
+  return state;
 }
 
 function mapDispatchToProps(dispatch) {

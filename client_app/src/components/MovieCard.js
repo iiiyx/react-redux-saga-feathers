@@ -1,5 +1,5 @@
 import React from 'react';
-import { browserHistory } from 'react-router';
+
 import { Image, Loader, Dimmer, Label, Icon, Card } from 'semantic-ui-react';
 import TimeAgo from 'react-timeago';
 import ruStrings from 'react-timeago/lib/language-strings/ru';
@@ -29,6 +29,7 @@ function preloader(kpid) {
 const MovieCard = (
   { sid, type, descr, ru, en, kpid, moon_tran, time, camrip, name },
   i,
+  push,
 ) => {
   const link = `/${encodeURIComponent(
     'смотреть-онлайн',
@@ -47,7 +48,7 @@ const MovieCard = (
       onClick={e => {
         e.preventDefault();
         e.stopPropagation();
-        browserHistory.push(link);
+        push(link);
       }}>
       <ImageLoader
         className="ui image"

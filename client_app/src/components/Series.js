@@ -1,12 +1,10 @@
-import React, { Component } from 'react';
-import { browserHistory } from 'react-router';
-import { connect } from 'react-redux';
+import React from 'react';
 
 import {
   buildSerieUri,
   seasonRegx,
   episodeRegx,
-  findElementPos,
+  // findElementPos,
 } from '../helpers/Utils';
 
 import {
@@ -22,9 +20,9 @@ import {
 import Player from './Player';
 
 const findIndexOfSerie = props => {
-  if (!props.params.season || !props.params.episode) return 0;
-  const seasonUriMatch = props.params.season.match(seasonRegx);
-  const episodeUriMatch = props.params.episode.match(episodeRegx);
+  if (!props.match.params.season || !props.match.params.episode) return 0;
+  const seasonUriMatch = props.match.params.season.match(seasonRegx);
+  const episodeUriMatch = props.match.params.episode.match(episodeRegx);
   if (
     !seasonUriMatch ||
     seasonUriMatch.length < 2 ||
@@ -38,63 +36,56 @@ const findIndexOfSerie = props => {
   return i === -1 ? 0 : i;
 };
 
-class Series extends Component {
-  getOnClickFunction(serie) {
-    return e => {
-      // const player = document.getElementById('player');
-      // if (player) {
-      //   const scrollTo = +player.offsetHeight + findElementPos(player);
-      //   window.scrollTo(0, scrollTo);
-      // }
-      browserHistory.push(buildSerieUri(this.props.params, serie));
-    };
-  }
-
-  render() {
-    if (
-      this.props.movie &&
-      this.props.movie.moonall_sers &&
-      this.props.movie.moonall_sers.length
-    ) {
-      const current = findIndexOfSerie(this.props);
-      return (
-        <div>
-          <Segment>
-            <Header as="h5" content="Выберите серию: " />
-            <Container textAlign="justified">
-              {this.props.movie.moonall_sers.map((serie, i) => (
+const Series = props => {
+  if (
+    props.movie &&
+    props.movie.moonall_sers &&
+    props.movie.moonall_sers.length
+  ) {
+    const current = findIndexOfSerie(props);
+    return (
+      <div>
+        <Segment>
+          <Header as="h5" content="Выберите серию: " />
+          <Container textAlign="justified">
+            {props.movie.moonall_sers.map((serie, i) => {
+              const link = buildSerieUri(props.match.params, serie);
+              return (
                 <Button
-                  onClick={this.getOnClickFunction(serie)}
+                  href={link}
+                  onClick={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    props.history.push(link);
+                  }}
                   className="margined"
                   primary={i === current}
                   key={i}>
                   {serie.s} - {serie.e}
                 </Button>
-              ))}
-            </Container>
-          </Segment>
-          <Divider hidden />
-          <Player sid={this.props.movie.moonall_sers[current].eid} />
-        </div>
-      );
-    }
-    return (
-      <Segment>
-        <Dimmer
-          inverted
-          active={
-            this.props.movie &&
-            this.props.movie.moonall_sers &&
-            this.props.movie.moonall_sers.isFetching === true
-          }>
-          <Loader>Загрузка...</Loader>
-        </Dimmer>
-        <Button>...</Button>
-      </Segment>
+              );
+            })}
+          </Container>
+        </Segment>
+        <Divider hidden />
+        <Player sid={props.movie.moonall_sers[current].eid} />
+      </div>
     );
   }
-}
+  return (
+    <Segment>
+      <Dimmer
+        inverted
+        active={
+          props.movie &&
+          props.movie.moonall_sers &&
+          props.movie.moonall_sers.isFetching === true
+        }>
+        <Loader>Загрузка...</Loader>
+      </Dimmer>
+      <Button>...</Button>
+    </Segment>
+  );
+};
 
-const mapStateToProps = (state, ownProps) => ({ ...ownProps.data });
-
-export default connect(mapStateToProps)(Series);
+export default Series;

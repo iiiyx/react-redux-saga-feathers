@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import { Segment, Card, Message, Dimmer, Loader } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
 
@@ -6,7 +7,20 @@ import MovieCard from './MovieCard';
 import LoadSpinner from './LoadSpinner';
 
 import AppConsts from '../helpers/Consts';
-// import { browserHistory } from 'react-router'
+import { getQueryTypes } from '../helpers/Utils';
+
+function loadMovieList(props) {
+  const search =
+    props.match.params.text != null
+      ? decodeURIComponent(props.match.params.text)
+      : null;
+  props.fetchMovies(
+    search,
+    0,
+    getQueryTypes(props.location.search) || null,
+    false,
+  );
+}
 
 class MovieList extends Component {
   constructor(props) {
@@ -14,17 +28,30 @@ class MovieList extends Component {
     this.loadMore = this.loadMore.bind(this);
   }
 
+  componentWillMount() {
+    loadMovieList(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (
+      getQueryTypes(nextProps.location.search) !==
+        getQueryTypes(this.props.location.search) ||
+      nextProps.match.params.text !== this.props.match.params.text
+    )
+      loadMovieList(nextProps);
+  }
+
   loadMore() {
     if (this.props.movies && this.props.movies.isFetching) return;
     const currPage = this.props.movies.skip / AppConsts.limit + 1;
     const search =
-      this.props.params.text != null
-        ? decodeURIComponent(this.props.params.text)
+      this.props.match.params.text != null
+        ? decodeURIComponent(this.props.match.params.text)
         : null;
     this.props.fetchMovies(
       search,
       currPage,
-      this.props.location.query.types || null,
+      getQueryTypes(this.props.location.search) || null,
       true,
     );
   }
@@ -50,7 +77,9 @@ class MovieList extends Component {
             }
             loader={<LoadSpinner />}>
             <Card.Group>
-              {this.props.movies.data.map((movie, i) => MovieCard(movie, i))}
+              {this.props.movies.data.map((movie, i) =>
+                MovieCard(movie, i, this.props.history.push),
+              )}
             </Card.Group>
           </InfiniteScroll>
         </div>
