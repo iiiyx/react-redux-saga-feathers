@@ -18,6 +18,7 @@ import {
 } from 'semantic-ui-react';
 
 import Player from './Player';
+// import Dummy from './Dummy';
 
 const findIndexOfSerie = props => {
   if (!props.match.params.season || !props.match.params.episode) return 0;
@@ -68,6 +69,7 @@ const Series = props => {
           </Container>
         </Segment>
         <Divider hidden />
+        {/* <Dummy /> */}
         <Player sid={props.movie.moonall_sers[current].eid} />
       </div>
     );
