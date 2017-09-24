@@ -7,6 +7,8 @@ import { Icon, Divider, Image, Header, Container } from 'semantic-ui-react';
 
 import * as actionCreators from '../actions';
 
+import { getQueryTypes } from '../helpers/Utils';
+
 import Scroller from './Scroller';
 import NavBar from './NavBar';
 import MovieList from './MovieList';
@@ -14,10 +16,48 @@ import SingleMovie from './SingleMovie';
 
 import '../styles/App.css';
 
+function loadMovieList(props) {
+  const search =
+    props.match.params.text != null
+      ? decodeURIComponent(props.match.params.text)
+      : null;
+  props.fetchMovies(
+    search,
+    0,
+    getQueryTypes(props.location.search) || null,
+    false,
+  );
+}
+
+function pageIsNotMovieList(props) {
+  return (
+    props.location.pathname.startsWith(
+      '/%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD/',
+    ) || props.location.pathname.startsWith('/смотреть-онлайн/')
+  );
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.toMain = this.toMain.bind(this);
+  }
+
+  componentWillMount() {
+    loadMovieList(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (
+      pageIsNotMovieList(nextProps) ||
+      pageIsNotMovieList(this.props) ||
+      // eslint-disable-next-line
+      (getQueryTypes(nextProps.location.search) == getQueryTypes(this.props.location.search) &&
+        // eslint-disable-next-line
+        nextProps.match.params.text == this.props.match.params.text)
+    )
+      return;
+    loadMovieList(nextProps);
   }
 
   toMain(e) {

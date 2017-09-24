@@ -9,36 +9,10 @@ import LoadSpinner from './LoadSpinner';
 import AppConsts from '../helpers/Consts';
 import { getQueryTypes } from '../helpers/Utils';
 
-function loadMovieList(props) {
-  const search =
-    props.match.params.text != null
-      ? decodeURIComponent(props.match.params.text)
-      : null;
-  props.fetchMovies(
-    search,
-    0,
-    getQueryTypes(props.location.search) || null,
-    false,
-  );
-}
-
 class MovieList extends Component {
   constructor(props) {
     super(props);
     this.loadMore = this.loadMore.bind(this);
-  }
-
-  componentWillMount() {
-    loadMovieList(this.props);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (
-      getQueryTypes(nextProps.location.search) !==
-        getQueryTypes(this.props.location.search) ||
-      nextProps.match.params.text !== this.props.match.params.text
-    )
-      loadMovieList(nextProps);
   }
 
   loadMore() {
