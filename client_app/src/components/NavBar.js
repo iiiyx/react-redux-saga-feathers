@@ -3,7 +3,10 @@ import React, { Component } from 'react';
 import { Button, Segment, Divider, Form, Input } from 'semantic-ui-react';
 
 import { PageTypeEnum, getType } from '../helpers/MovieTypeHelper';
-import { getQueryTypes } from '../helpers/Utils';
+import {
+  getQueryTypes,
+  getCompiledSearchPathWithTypes,
+} from '../helpers/Utils';
 
 class NavBar extends Component {
   constructor(props) {
@@ -49,24 +52,23 @@ class NavBar extends Component {
     }
   }
 
+  submitSearch(types) {
+    const text = this.state.searchStr || '';
+    const addr = getCompiledSearchPathWithTypes(text, types);
+    this.props.history.push(addr);
+  }
+
   onSearchSubmit = e => {
     e.preventDefault();
     e.stopPropagation();
-    const text = this.state.searchStr || '';
-    let addr =
-      text === ''
-        ? '/'
-        : `/${encodeURIComponent('искать')}/${encodeURIComponent(text)}`;
-    const types = getQueryTypes(this.props.location.search) || '';
-    this.props.history.push(addr + (types !== '' ? '?types=' + types : ''));
+    this.submitSearch(getQueryTypes(this.props.location.search) || '');
   };
 
   onSearchClear = e => {
     e.preventDefault();
     e.stopPropagation();
     this.setState({ searchStr: '' });
-    const types = getQueryTypes(this.props.location.search) || '';
-    this.props.history.push(types !== '' ? '/?types=' + types : '/');
+    this.submitSearch(getQueryTypes(this.props.location.search) || '');
   };
 
   onSearchChange = e => {
@@ -84,12 +86,7 @@ class NavBar extends Component {
       .map(type => type.val)
       .join(',');
 
-    const text = this.state.searchStr || '';
-    let addr =
-      text === ''
-        ? '/'
-        : `/${encodeURIComponent('искать')}/${encodeURIComponent(text)}`;
-    this.props.history.push(addr + (types !== '' ? '?types=' + types : ''));
+    this.submitSearch(types);
   };
 
   createCheckBox = type => (

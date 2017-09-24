@@ -12,7 +12,13 @@ import {
   Item,
 } from 'semantic-ui-react';
 
-import { findElementPos } from '../helpers/Utils';
+import {
+  findElementPos,
+  getUrlEncodedEpisodePath,
+  getUrlDecodedEpisodePath,
+  getUrlEncodedMoviePath,
+  getUrlDecodedMoviePath,
+} from '../helpers/Utils';
 
 import Series from './Series';
 import Player from './Player';
@@ -91,6 +97,7 @@ class SingleMovie extends Component {
                   </Item.Description>
                 )}
                 <Item.Extra>
+                  {/*TODO: add kinopoisk ratings API*/}
                   {/*<div>{movie.descr}</div><div>Рейтинг: ...</div>*/}
                 </Item.Extra>
               </Item.Content>
@@ -101,20 +108,20 @@ class SingleMovie extends Component {
             <Switch>
               <Route
                 exact
-                path="/%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD/:type/:name/:id"
+                path={getUrlEncodedMoviePath()}
                 render={({ match }) => <Series {...{ ...this.props, match }} />}
               />
               <Route
                 exact
-                path="/смотреть-онлайн/:type/:name/:id"
+                path={getUrlDecodedMoviePath()}
                 render={({ match }) => <Series {...{ ...this.props, match }} />}
               />
               <Route
-                path="/%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD/:type/:name/:id/:season/:episode"
+                path={getUrlEncodedEpisodePath()}
                 render={({ match }) => <Series {...{ ...this.props, match }} />}
               />
               <Route
-                path="/смотреть-онлайн/:type/:name/:id/:season/:episode"
+                path={getUrlDecodedEpisodePath()}
                 render={({ match }) => <Series {...{ ...this.props, match }} />}
               />
             </Switch>
@@ -128,15 +135,31 @@ class SingleMovie extends Component {
   }
 }
 
+const findMovieInFetchedCurrentMovie = (state, ownProps) => {
+  return (
+    state.currMovie &&
+    state.currMovie.sid === ownProps.match.params.id &&
+    state.currMovie
+  );
+};
+
+const findMovieInFetchedList = (state, ownProps) => {
+  return (
+    state.movies &&
+    state.movies.data &&
+    state.movies.data.length &&
+    state.movies.data.find(movie => movie.sid === ownProps.match.params.id)
+  );
+};
+
+const findMovieInAlreadyFetchedData = (state, ownProps) => {
+  return (
+    findMovieInFetchedCurrentMovie(state, ownProps) ||
+    findMovieInFetchedList(state, ownProps)
+  );
+};
 const mapStateToProps = (state, ownProps) => {
-  const newMovie =
-    (state.currMovie &&
-      state.currMovie.sid === ownProps.match.params.id &&
-      state.currMovie) ||
-    (state.movies &&
-      state.movies.data &&
-      state.movies.data.length &&
-      state.movies.data.find(movie => movie.sid === ownProps.match.params.id));
+  const newMovie = findMovieInAlreadyFetchedData(state, ownProps);
   if (newMovie) {
     return {
       ...ownProps,

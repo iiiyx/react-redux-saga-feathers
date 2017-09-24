@@ -2,12 +2,19 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
+import { matchPath } from 'react-router';
 
 import { Icon, Divider, Image, Header, Container } from 'semantic-ui-react';
 
 import * as actionCreators from '../actions';
 
-import { getQueryTypes } from '../helpers/Utils';
+import {
+  getQueryTypes,
+  getUrlDecodedSearchPath,
+  getUrlEncodedSearchPath,
+  getUrlDecodedMoviePath,
+  getUrlEncodedMoviePath,
+} from '../helpers/Utils';
 
 import Scroller from './Scroller';
 import NavBar from './NavBar';
@@ -29,11 +36,15 @@ function loadMovieList(props) {
   );
 }
 
-function pageIsNotMovieList(props) {
+function pageIsMoviePage(props) {
+  const matchObj = path => ({
+    path: path,
+    exact: false,
+    strict: false,
+  });
   return (
-    props.location.pathname.startsWith(
-      '/%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD/',
-    ) || props.location.pathname.startsWith('/смотреть-онлайн/')
+    matchPath(props.location.pathname, matchObj(getUrlEncodedMoviePath())) ||
+    matchPath(props.location.pathname, matchObj(getUrlDecodedMoviePath()))
   );
 }
 
@@ -49,8 +60,8 @@ class App extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (
-      pageIsNotMovieList(nextProps) ||
-      pageIsNotMovieList(this.props) ||
+      pageIsMoviePage(nextProps) ||
+      pageIsMoviePage(this.props) ||
       // eslint-disable-next-line
       (getQueryTypes(nextProps.location.search) == getQueryTypes(this.props.location.search) &&
         // eslint-disable-next-line
@@ -84,23 +95,23 @@ class App extends Component {
         <Switch>
           <Route exact path="/" render={() => <MovieList {...this.props} />} />
           <Route
-            path="/%D1%81%D0%BC%D0%BE%D1%82%D1%80%D0%B5%D1%82%D1%8C-%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD/:type/:name/:id"
+            path={getUrlEncodedMoviePath()}
             render={({ match }) => (
               <SingleMovie {...{ ...this.props, match }} />
             )}
           />
           <Route
-            path="/смотреть-онлайн/:type/:name/:id"
+            path={getUrlDecodedMoviePath()}
             render={({ match }) => (
               <SingleMovie {...{ ...this.props, match }} />
             )}
           />
           <Route
-            path="/%D0%B8%D1%81%D0%BA%D0%B0%D1%82%D1%8C/:text"
+            path={getUrlEncodedSearchPath()}
             render={({ match }) => <MovieList {...{ ...this.props, match }} />}
           />
           <Route
-            path="/искать/:text"
+            path={getUrlDecodedSearchPath()}
             render={({ match }) => <MovieList {...{ ...this.props, match }} />}
           />
         </Switch>
