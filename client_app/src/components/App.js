@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Route, Switch } from 'react-router-dom';
-import { matchPath } from 'react-router';
+import { Route } from 'react-router-dom';
 
 import { Icon, Divider, Image, Header, Container } from 'semantic-ui-react';
 
 import * as actionCreators from '../actions';
 
 import {
-  getQueryTypes,
   getUrlDecodedSearchPath,
   getUrlEncodedSearchPath,
   getUrlDecodedMoviePath,
   getUrlEncodedMoviePath,
 } from '../helpers/Utils';
+
+import ConnectedSwitch from './ConnectedSwitch';
 
 import Scroller from './Scroller';
 import NavBar from './NavBar';
@@ -23,58 +23,10 @@ import SingleMovie from './SingleMovie';
 
 import '../styles/App.css';
 
-//TODO: move to Utils
-function pageIsMoviePage(props) {
-  const matchObj = path => ({
-    path: path,
-    exact: false,
-    strict: false,
-  });
-  return (
-    matchPath(props.location.pathname, matchObj(getUrlEncodedMoviePath())) ||
-    matchPath(props.location.pathname, matchObj(getUrlDecodedMoviePath()))
-  );
-}
-
 class App extends Component {
   constructor(props) {
     super(props);
     this.toMain = this.toMain.bind(this);
-  }
-
-  componentWillMount() {
-    this.loadMovieList(this.props);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const nextPageIsMoviePage = pageIsMoviePage(nextProps);
-    const nextPageDataWasAlreadyFetched =
-      //eslint-disable-next-line
-      getQueryTypes(nextProps.location.search) == this.lastData.types &&
-      //eslint-disable-next-line
-      nextProps.match.params.text == this.lastData.text;
-
-    if (nextPageIsMoviePage || nextPageDataWasAlreadyFetched) return;
-
-    this.loadMovieList(nextProps);
-  }
-
-  loadMovieList(props) {
-    const search =
-      props.match.params.text != null
-        ? decodeURIComponent(props.match.params.text)
-        : null;
-
-    const types = getQueryTypes(props.location.search) || null;
-    const currentPage = 0;
-    const isLoadMore = false;
-
-    props.fetchMovies(search, currentPage, types, isLoadMore);
-
-    this.lastData = {
-      text: props.match.params.text,
-      types,
-    };
   }
 
   toMain(e) {
@@ -98,7 +50,7 @@ class App extends Component {
         </a>
         <Divider hidden />
         <NavBar {...this.props} />
-        <Switch>
+        <ConnectedSwitch>
           <Route exact path="/" render={() => <MovieList {...this.props} />} />
           <Route
             path={getUrlEncodedMoviePath()}
@@ -120,7 +72,7 @@ class App extends Component {
             path={getUrlDecodedSearchPath()}
             render={({ match }) => <MovieList {...{ ...this.props, match }} />}
           />
-        </Switch>
+        </ConnectedSwitch>
         <Divider hidden />
         <Header
           as="h5"

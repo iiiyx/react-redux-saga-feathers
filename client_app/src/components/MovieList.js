@@ -15,6 +15,41 @@ class MovieList extends Component {
     this.loadMore = this.loadMore.bind(this);
   }
 
+  componentWillMount() {
+    this.loadMovieList(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.loadMovieList(nextProps);
+  }
+
+  loadMovieList(props) {
+    const dataWasAlreadyFetched =
+      this.lastData &&
+      //eslint-disable-next-line
+      getQueryTypes(props.location.search) == this.lastData.types &&
+      //eslint-disable-next-line
+      props.match.params.text == this.lastData.text;
+
+    if (dataWasAlreadyFetched) return;
+
+    const search =
+      props.match.params.text != null
+        ? decodeURIComponent(props.match.params.text)
+        : null;
+
+    const types = getQueryTypes(props.location.search) || null;
+    const currentPage = 0;
+    const isLoadMore = false;
+
+    props.fetchMovies(search, currentPage, types, isLoadMore);
+
+    this.lastData = {
+      text: props.match.params.text,
+      types,
+    };
+  }
+
   loadMore() {
     if (this.props.movies && this.props.movies.isFetching) return;
     const currPage = this.props.movies.skip / AppConsts.limit + 1;

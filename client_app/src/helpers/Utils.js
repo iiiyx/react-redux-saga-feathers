@@ -85,7 +85,7 @@ export const getUrlDecodedEpisodePath = () => {
 export const getCompiledSearchPath = text => {
   if (text)
     return pathToRegexp.compile(getUrlEncodedSearchPath())({
-      text: encodeURIComponent(text),
+      text: text,
     });
   return '/';
 };

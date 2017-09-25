@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { matchPath } from 'react-router';
+import { connect } from 'react-redux';
 
 import { Button, Segment, Divider, Form, Input } from 'semantic-ui-react';
 
@@ -6,6 +8,7 @@ import { PageTypeEnum, getType } from '../helpers/MovieTypeHelper';
 import {
   getQueryTypes,
   getCompiledSearchPathWithTypes,
+  getUrlDecodedSearchPath,
 } from '../helpers/Utils';
 
 class NavBar extends Component {
@@ -52,8 +55,9 @@ class NavBar extends Component {
     }
   }
 
-  submitSearch(types) {
-    const text = this.state.searchStr || '';
+  submitSearch(types, _text) {
+    let text = this.state.searchStr || '';
+    if (_text != null) text = _text;
     const addr = getCompiledSearchPathWithTypes(text, types);
     this.props.history.push(addr);
   }
@@ -68,7 +72,7 @@ class NavBar extends Component {
     e.preventDefault();
     e.stopPropagation();
     this.setState({ searchStr: '' });
-    this.submitSearch(getQueryTypes(this.props.location.search) || '');
+    this.submitSearch(getQueryTypes(this.props.location.search) || '', '');
   };
 
   onSearchChange = e => {
@@ -143,4 +147,19 @@ class NavBar extends Component {
   }
 }
 
-export default NavBar;
+function mapStateToProps(state, ownProps) {
+  const matchObj = {
+    path: getUrlDecodedSearchPath(),
+    exact: false,
+    strict: false,
+  };
+  const searchMatch = matchPath(state.routing.location.pathname, matchObj) || {
+    params: {},
+  };
+  return {
+    ...ownProps,
+    match: searchMatch,
+  };
+}
+
+export default connect(mapStateToProps)(NavBar);
