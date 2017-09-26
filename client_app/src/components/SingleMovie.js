@@ -18,19 +18,14 @@ import {
   getUrlDecodedEpisodePath,
   getUrlEncodedMoviePath,
   getUrlDecodedMoviePath,
-} from '../helpers/Utils';
+} from '../helpers/utils';
 
 import Series from './Series';
 import Player from './Player';
 
 class SingleMovie extends Component {
-  constructor(props) {
-    super(props);
-    console.log(props);
-  }
-
   componentDidMount() {
-    const topNav = document.getElementsByClassName('topNav')[0];
+    const topNav = document.querySelector(`.${this.props.topNavClass}`);
     if (topNav) {
       const scrollTo = +topNav.offsetHeight + findElementPos(topNav);
       window.scrollTo(0, scrollTo);

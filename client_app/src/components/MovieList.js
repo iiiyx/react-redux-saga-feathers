@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import { Segment, Card, Message, Dimmer, Loader } from 'semantic-ui-react';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -6,8 +7,8 @@ import InfiniteScroll from 'react-infinite-scroller';
 import MovieCard from './MovieCard';
 import LoadSpinner from './LoadSpinner';
 
-import AppConsts from '../helpers/Consts';
-import { getQueryTypes } from '../helpers/Utils';
+import consts from '../helpers/consts';
+import { getQueryTypes } from '../helpers/utils';
 
 class MovieList extends Component {
   componentWillMount() {
@@ -43,7 +44,7 @@ class MovieList extends Component {
 
   loadMore = () => {
     if (this.props.movies && this.props.movies.isFetching) return;
-    const currPage = this.props.movies.skip / AppConsts.limit + 1;
+    const currPage = this.props.movies.skip / consts.limit + 1;
     const search =
       this.props.match.params.text != null
         ? decodeURIComponent(this.props.match.params.text)
@@ -73,7 +74,7 @@ class MovieList extends Component {
             pageStart={0}
             loadMore={this.loadMore}
             hasMore={
-              this.props.movies.total - this.props.movies.skip > AppConsts.limit
+              this.props.movies.total - this.props.movies.skip > consts.limit
             }
             loader={<LoadSpinner />}>
             <Card.Group>
@@ -99,4 +100,13 @@ class MovieList extends Component {
   }
 }
 
-export default MovieList;
+function mapStateToProps({ movies }, { match, history, fetchMovies }) {
+  return {
+    movies,
+    fetchMovies,
+    match,
+    history,
+  };
+}
+
+export default connect(mapStateToProps)(MovieList);

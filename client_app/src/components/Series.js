@@ -5,7 +5,7 @@ import {
   seasonRegx,
   episodeRegx,
   // findElementPos,
-} from '../helpers/Utils';
+} from '../helpers/utils';
 
 import {
   Container,

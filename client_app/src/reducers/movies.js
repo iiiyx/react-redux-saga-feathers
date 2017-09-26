@@ -1,4 +1,4 @@
-import { getType } from '../helpers/MovieTypeHelper';
+import { getType } from '../helpers/movieTypeHelper';
 
 function movies(state = { data: [] }, action) {
   switch (action.type) {

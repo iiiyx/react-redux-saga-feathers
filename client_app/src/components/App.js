@@ -12,7 +12,7 @@ import {
   getUrlEncodedSearchPath,
   getUrlDecodedMoviePath,
   getUrlEncodedMoviePath,
-} from '../helpers/Utils';
+} from '../helpers/utils';
 
 import ConnectedSwitch from './ConnectedSwitch';
 
@@ -24,18 +24,14 @@ import SingleMovie from './SingleMovie';
 import '../styles/App.css';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.toMain = this.toMain.bind(this);
-  }
-
-  toMain(e) {
+  toMain = e => {
     e.preventDefault();
     this.props.history.push('/');
     window.scrollTo(0, 0);
-  }
+  };
 
   render() {
+    const topNavClass = 'topNav';
     return (
       <Container>
         <Divider hidden />
@@ -49,19 +45,19 @@ class App extends Component {
           </Header>
         </a>
         <Divider hidden />
-        <NavBar {...this.props} />
+        <NavBar {...this.props} className={topNavClass} />
         <ConnectedSwitch>
           <Route exact path="/" render={() => <MovieList {...this.props} />} />
           <Route
             path={getUrlEncodedMoviePath()}
             render={({ match }) => (
-              <SingleMovie {...{ ...this.props, match }} />
+              <SingleMovie {...{ ...this.props, match, topNavClass }} />
             )}
           />
           <Route
             path={getUrlDecodedMoviePath()}
             render={({ match }) => (
-              <SingleMovie {...{ ...this.props, match }} />
+              <SingleMovie {...{ ...this.props, match, topNavClass }} />
             )}
           />
           <Route
@@ -88,12 +84,8 @@ class App extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return state;
-}
-
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(actionCreators, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(null, mapDispatchToProps)(App);

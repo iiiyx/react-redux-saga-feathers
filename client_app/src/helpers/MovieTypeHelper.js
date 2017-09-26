@@ -1,4 +1,4 @@
-export const PageTypeEnum = {
+export const pageTypeEnum = {
   MovFor: {
     val: 1,
     isActive: true,
@@ -109,9 +109,9 @@ export const PageTypeEnum = {
 
 export function getType(i) {
   const searched = +i;
-  const keys = Object.getOwnPropertyNames(PageTypeEnum);
+  const keys = Object.getOwnPropertyNames(pageTypeEnum);
   for (let key in keys) {
-    let val = PageTypeEnum[keys[key]];
+    let val = pageTypeEnum[keys[key]];
     if (val.val === searched) return val;
   }
   return null;

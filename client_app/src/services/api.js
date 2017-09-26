@@ -1,7 +1,9 @@
-import AppConsts from '../helpers/Consts';
+//TODO: handle errors
+//TODO: check feathers `then` syntax
+import consts from '../helpers/consts';
 
 export function fetchMovie(app, id) {
-  const movies = app.service('api_movies');
+  const movies = app.service(consts.moviesApi);
   return movies
     .find({
       query: {
@@ -9,18 +11,19 @@ export function fetchMovie(app, id) {
         sid: id,
       },
     })
-    .then((data, err) => data.data);
+    .then(data => data.data)
+    .catch(err => console.log('API', err));
 }
 
 export function fetchMovies(app, text, page, types) {
-  const movies = app.service('api_movies');
+  const movies = app.service(consts.moviesApi);
   let qObj = {
     query: {
       $sort: {
         time: -1,
       },
-      $skip: page * AppConsts.limit,
-      $limit: AppConsts.limit,
+      $skip: page * consts.limit,
+      $limit: consts.limit,
     },
   };
   if (types != null) {
@@ -52,5 +55,10 @@ export function fetchMovies(app, text, page, types) {
       },
     ];
   }
-  return movies.find(qObj).then((data, err) => data);
+  return movies
+    .find(qObj)
+    .then(data => {
+      return data;
+    })
+    .catch(err => console.log('API', err));
 }

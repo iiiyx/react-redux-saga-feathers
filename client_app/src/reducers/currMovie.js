@@ -1,4 +1,4 @@
-import { getType } from '../helpers/MovieTypeHelper';
+import { getType } from '../helpers/movieTypeHelper';
 
 const currMovie = (state = {}, action) => {
   switch (action.type) {

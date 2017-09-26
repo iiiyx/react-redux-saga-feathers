@@ -4,12 +4,12 @@ import { connect } from 'react-redux';
 
 import { Button, Segment, Divider, Form, Input } from 'semantic-ui-react';
 
-import { PageTypeEnum, getType } from '../helpers/MovieTypeHelper';
+import { pageTypeEnum, getType } from '../helpers/movieTypeHelper';
 import {
   getQueryTypes,
   getCompiledSearchPathWithTypes,
   getUrlDecodedSearchPath,
-} from '../helpers/Utils';
+} from '../helpers/utils';
 
 class NavBar extends Component {
   constructor(props) {
@@ -18,9 +18,9 @@ class NavBar extends Component {
       searchStr: props.match.params.text || '',
     };
     this.types = [];
-    const keys = Object.getOwnPropertyNames(PageTypeEnum);
+    const keys = Object.getOwnPropertyNames(pageTypeEnum);
     for (let key in keys) {
-      let val = PageTypeEnum[keys[key]];
+      let val = pageTypeEnum[keys[key]];
       if (!val.isActive) continue;
       this.types.push(val);
     }
@@ -105,7 +105,7 @@ class NavBar extends Component {
 
   render() {
     return (
-      <div className="topNav">
+      <div className={this.props.className}>
         <Form onSubmit={this.onSearchSubmit}>
           <Input fluid size="big" action>
             <input

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import TweenFunctions from 'tween-functions';
 import detectPassiveEvents from 'detect-passive-events';
 
-const data = {
+const initialData = {
   startValue: 0,
   currentTime: 0, // store current time of animation
   startTime: null,
@@ -12,8 +12,8 @@ const data = {
 class Scroller extends Component {
   constructor(props) {
     super(props);
-    this.data = { ...data };
     this.state = {
+      ...initialData,
       show: false,
     };
   }
@@ -50,31 +50,32 @@ class Scroller extends Component {
   }
 
   handleScroll = () => {
-    if (window.pageYOffset > this.props.showUnder) {
-      this.setState({ show: true });
-    } else {
-      this.setState({ show: false });
-    }
+    const show = window.pageYOffset > this.props.showUnder;
+    this.setState({ show: show });
   };
 
   handleClick = () => {
     this.stopScrolling();
-    this.data.startValue = window.pageYOffset;
-    this.data.currentTime = 0;
-    this.data.startTime = null;
-    this.data.rafId = window.requestAnimationFrame(this.scrollStep);
+    const data = {
+      startValue: window.pageYOffset,
+      currentTime: 0,
+      startTime: null,
+      rafId: window.requestAnimationFrame(this.scrollStep),
+    };
+    this.setState({
+      ...data,
+      show: this.state.show,
+    });
   };
 
   scrollStep = timestamp => {
-    if (!this.data.startTime) {
-      this.data.startTime = timestamp;
-    }
+    const nextState = {};
+    nextState.startTime = this.state.startTime || timestamp;
+    nextState.currentTime = timestamp - nextState.startTime;
 
-    this.data.currentTime = timestamp - this.data.startTime;
-
-    var position = TweenFunctions[this.props.easing](
-      this.data.currentTime,
-      this.data.startValue,
+    const position = TweenFunctions[this.props.easing](
+      nextState.currentTime,
+      this.state.startValue,
       this.props.topPosition,
       this.props.duration,
     );
@@ -83,28 +84,31 @@ class Scroller extends Component {
       this.stopScrolling();
     } else {
       window.scrollTo(window.pageYOffset, position);
-      this.data.rafId = window.requestAnimationFrame(this.scrollStep);
+      nextState.rafId = window.requestAnimationFrame(this.scrollStep);
     }
+    const newState = {
+      ...this.state,
+      ...nextState,
+    };
+    this.setState(newState);
   };
 
   stopScrolling = () => {
-    window.cancelAnimationFrame(this.data.rafId);
+    window.cancelAnimationFrame(this.state.rafId);
   };
 
   render() {
-    var propStyle = this.props.style;
-    var element = React.createElement(
-      'div',
-      { style: propStyle, onClick: this.handleClick, className: 'scroller' },
-      this.props.children,
+    const style = {
+      ...this.props.style,
+      opacity: this.state.show ? 1 : 0,
+      visibility: this.state.show ? 'visible' : 'hidden',
+      transitionProperty: 'opacity, visibility',
+    };
+    return (
+      <div style={style} onClick={this.handleClick} className="scroller">
+        {React.cloneElement(this.props.children)}
+      </div>
     );
-
-    var style = Object.assign({}, propStyle);
-    style.opacity = this.state.show ? 1 : 0;
-    style.visibility = this.state.show ? 'visible' : 'hidden';
-    style.transitionProperty = 'opacity, visibility';
-
-    return React.cloneElement(element, { style: style });
   }
 }
 

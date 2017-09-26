@@ -1,4 +1,4 @@
-import Consts from './Consts';
+import consts from './consts';
 import qs from 'qs';
 import pathToRegexp from 'path-to-regexp';
 
@@ -15,7 +15,7 @@ export const buildMovieUri = params => {
   if (!params) return '/';
   return (
     '/' +
-    Consts.uriPrefix +
+    consts.uriPrefix +
     '/' +
     params.type +
     '/' +
@@ -33,20 +33,20 @@ export const buildSerieUri = (params, serie) => {
   return (
     movieUri +
     '/' +
-    Consts.seasonUri +
+    consts.seasonUri +
     serie.s +
     '/' +
-    Consts.episodeUri +
+    consts.episodeUri +
     serie.e
   );
 };
 
 export const episodeRegx = new RegExp(
-  `^${decodeURIComponent(Consts.episodeUri)}(\\d+)$`,
+  `^${decodeURIComponent(consts.episodeUri)}(\\d+)$`,
 );
 
 export const seasonRegx = new RegExp(
-  `^${decodeURIComponent(Consts.seasonUri)}(\\d+)$`,
+  `^${decodeURIComponent(consts.seasonUri)}(\\d+)$`,
 );
 
 export const findElementPos = element => {
@@ -59,19 +59,19 @@ export const findElementPos = element => {
 };
 
 export const getUrlEncodedMoviePath = () => {
-  return '/' + Consts.uriPrefix + '/:type/:name/:id';
+  return '/' + consts.uriPrefix + '/:type/:name/:id';
 };
 
 export const getUrlDecodedMoviePath = () => {
-  return '/' + decodeURIComponent(Consts.uriPrefix) + '/:type/:name/:id';
+  return '/' + decodeURIComponent(consts.uriPrefix) + '/:type/:name/:id';
 };
 
 export const getUrlEncodedSearchPath = () => {
-  return '/' + Consts.searchPrefix + '/:text';
+  return '/' + consts.searchPrefix + '/:text';
 };
 
 export const getUrlDecodedSearchPath = () => {
-  return '/' + decodeURIComponent(Consts.searchPrefix) + '/:text';
+  return '/' + decodeURIComponent(consts.searchPrefix) + '/:text';
 };
 
 export const getUrlEncodedEpisodePath = () => {

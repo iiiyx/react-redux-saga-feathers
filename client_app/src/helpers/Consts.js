@@ -4,4 +4,5 @@ export default {
   searchPrefix: encodeURIComponent('искать'),
   seasonUri: encodeURIComponent('сезон-'),
   episodeUri: encodeURIComponent('серия-'),
+  moviesApi: 'api_movies',
 };
