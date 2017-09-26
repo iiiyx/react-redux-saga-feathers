@@ -7,7 +7,6 @@ import createHistory from 'history/createBrowserHistory';
 import feathers from 'feathers-client';
 // To use REST instead of WS uncomment superagent and rest and comment io
 import superagent from 'superagent';
-import rest from 'feathers-rest/client';
 // import io from 'socket.io-client';
 
 import mySaga from './sagas/sagas';
