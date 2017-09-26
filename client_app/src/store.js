@@ -7,7 +7,6 @@ import createHistory from 'history/createBrowserHistory';
 import feathers from 'feathers-client';
 // To use REST instead of WS uncomment superagent and rest and comment io
 import superagent from 'superagent';
-import rest from 'feathers-rest/client';
 // import io from 'socket.io-client';
 
 import mySaga from './sagas/sagas';
@@ -22,7 +21,7 @@ const store = createStore(
   composeWithDevTools(applyMiddleware(sagaMiddleware, routeMiddleware)),
 );
 
-const host = 'http://localhost:3031';
+const host = 'http://smotri-tut.tk';
 // const socket = io(host);
 
 export const app = feathers()

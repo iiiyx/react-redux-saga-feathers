@@ -10,11 +10,6 @@ import AppConsts from '../helpers/Consts';
 import { getQueryTypes } from '../helpers/Utils';
 
 class MovieList extends Component {
-  constructor(props) {
-    super(props);
-    this.loadMore = this.loadMore.bind(this);
-  }
-
   componentWillMount() {
     this.loadMovieList(this.props);
   }
@@ -24,33 +19,29 @@ class MovieList extends Component {
   }
 
   loadMovieList(props) {
-    const dataWasAlreadyFetched =
-      this.lastData &&
-      //eslint-disable-next-line
-      getQueryTypes(props.location.search) == this.lastData.types &&
-      //eslint-disable-next-line
-      props.match.params.text == this.lastData.text;
-
-    if (dataWasAlreadyFetched) return;
-
     const search =
       props.match.params.text != null
         ? decodeURIComponent(props.match.params.text)
         : null;
 
-    const types = getQueryTypes(props.location.search) || null;
+    const types = getQueryTypes(props.history.location.search) || null;
     const currentPage = 0;
     const isLoadMore = false;
 
-    props.fetchMovies(search, currentPage, types, isLoadMore);
+    const dataWasAlreadyFetched =
+      props.movies &&
+      props.movies.request &&
+      //eslint-disable-next-line
+      types == props.movies.request.types &&
+      //eslint-disable-next-line
+      search == props.movies.request.search;
 
-    this.lastData = {
-      text: props.match.params.text,
-      types,
-    };
+    if (dataWasAlreadyFetched) return;
+
+    props.fetchMovies(search, currentPage, types, isLoadMore);
   }
 
-  loadMore() {
+  loadMore = () => {
     if (this.props.movies && this.props.movies.isFetching) return;
     const currPage = this.props.movies.skip / AppConsts.limit + 1;
     const search =
@@ -60,10 +51,10 @@ class MovieList extends Component {
     this.props.fetchMovies(
       search,
       currPage,
-      getQueryTypes(this.props.location.search) || null,
+      getQueryTypes(this.props.history.location.search) || null,
       true,
     );
-  }
+  };
 
   render() {
     if (

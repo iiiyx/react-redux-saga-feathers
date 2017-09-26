@@ -14,13 +14,19 @@ function movies(state = { data: [] }, action) {
       }
       if (action.type === 'MORE_MOVIES_DONE')
         action.movies.data = state.data.concat(action.movies.data);
-      return action.movies;
+      return {
+        ...action.movies,
+        request: state.request,
+      };
 
     case 'MOVIES_FETCH_REQUESTED':
       if (action.isMore) return state;
       return {
         ...state,
         isFetching: true,
+        request: {
+          ...action,
+        },
       };
 
     default:
