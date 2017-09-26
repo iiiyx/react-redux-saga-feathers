@@ -12,7 +12,7 @@ export function fetchMovie(app, id) {
       },
     })
     .then(data => data.data)
-    .catch(err => console.log('API', err));
+    .catch(err => console.log('fetchMovie', err));
 }
 
 export function fetchMovies(app, text, page, types) {
@@ -60,5 +60,5 @@ export function fetchMovies(app, text, page, types) {
     .then(data => {
       return data;
     })
-    .catch(err => console.log('API', err));
+    .catch(err => console.log('fetchMovies', err));
 }
