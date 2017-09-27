@@ -26,7 +26,9 @@ import '../styles/App.css';
 class App extends Component {
   toMain = e => {
     e.preventDefault();
-    this.props.history.push('/');
+    if (this.props.history.location.pathname !== '/') {
+      this.props.history.push('/');
+    }
     window.scrollTo(0, 0);
   };
 

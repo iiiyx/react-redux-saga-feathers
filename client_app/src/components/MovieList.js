@@ -20,7 +20,7 @@ class MovieList extends Component {
   }
 
   loadMovieList(props) {
-    const search =
+    const text =
       props.match.params.text != null
         ? decodeURIComponent(props.match.params.text)
         : null;
@@ -35,11 +35,11 @@ class MovieList extends Component {
       //eslint-disable-next-line
       types == props.movies.request.types &&
       //eslint-disable-next-line
-      search == props.movies.request.search;
+      text == props.movies.request.text;
 
     if (dataWasAlreadyFetched) return;
 
-    props.fetchMovies(search, currentPage, types, isLoadMore);
+    props.fetchMovies(text, currentPage, types, isLoadMore);
   }
 
   loadMore = () => {
