@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import TweenFunctions from 'tween-functions';
 import detectPassiveEvents from 'detect-passive-events';
 
+import '../styles/Scroller.css';
+
 const initialData = {
   startValue: 0,
   currentTime: 0, // store current time of animation

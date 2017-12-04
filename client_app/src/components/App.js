@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
 
-import { Icon, Divider, Image, Header, Container } from 'semantic-ui-react';
+import { MuiThemeProvider, Avatar, Divider, Card, CardHeader, CardTitle, FontIcon } from 'material-ui';
 
 import * as actionCreators from '../actions';
 
@@ -35,53 +35,61 @@ class App extends Component {
   render() {
     const topNavClass = 'topNav';
     return (
-      <Container>
-        <Divider hidden />
-        <a href="/" onClick={this.toMain}>
-          <Header as="h1" textAlign="center">
-            <Image shape="circular" src="/150.png" />{' '}
-            <Header.Content className="alike">
-              Смотри ТУТ!
-              <Header.Subheader>Все новые сериалы и фильмы</Header.Subheader>
-            </Header.Content>
-          </Header>
-        </a>
-        <Divider hidden />
-        <NavBar {...this.props} className={topNavClass} />
-        <ConnectedSwitch>
-          <Route exact path="/" render={() => <MovieList {...this.props} />} />
-          <Route
-            path={getUrlEncodedMoviePath()}
-            render={({ match }) => (
-              <SingleMovie {...{ ...this.props, match, topNavClass }} />
-            )}
-          />
-          <Route
-            path={getUrlDecodedMoviePath()}
-            render={({ match }) => (
-              <SingleMovie {...{ ...this.props, match, topNavClass }} />
-            )}
-          />
-          <Route
-            path={getUrlEncodedSearchPath()}
-            render={({ match }) => <MovieList {...{ ...this.props, match }} />}
-          />
-          <Route
-            path={getUrlDecodedSearchPath()}
-            render={({ match }) => <MovieList {...{ ...this.props, match }} />}
-          />
-        </ConnectedSwitch>
-        <Divider hidden />
-        <Header
-          as="h5"
-          textAlign="center"
-          content="Inspired by ReactJS | 2017"
-        />
-        <Divider hidden />
-        <Scroller showUnder={160}>
-          <Icon name="arrow up" size="big" />
-        </Scroller>
-      </Container>
+      <MuiThemeProvider>
+        <div className="container">
+          <Divider hidden />
+          <a href="/" onClick={this.toMain}>
+            <Card style={{ boxShadow: 'none' }}>
+              <CardHeader
+                className="alike flex-center-middle"
+                title="Смотри ТУТ!"
+                titleColor="#4183c4"
+                titleStyle={{ fontSize: '28px' }}
+                subtitle="Все новые сериалы и фильмы"
+                subtitleStyle={{ fontSize: '16px', fontWeight: 'normal' }}
+                avatar={<Avatar src="/150.png" size="70" backgroundColor="none" />}>
+              </CardHeader>
+            </Card>
+          </a>
+          <Divider hidden />
+          <NavBar {...this.props} className={topNavClass} />
+          <ConnectedSwitch>
+            <Route exact path="/" render={() => <MovieList {...this.props} />} />
+            <Route
+              path={getUrlEncodedMoviePath()}
+              render={({ match }) => (
+                <SingleMovie {...{ ...this.props, match, topNavClass }} />
+              )}
+            />
+            <Route
+              path={getUrlDecodedMoviePath()}
+              render={({ match }) => (
+                <SingleMovie {...{ ...this.props, match, topNavClass }} />
+              )}
+            />
+            <Route
+              path={getUrlEncodedSearchPath()}
+              render={({ match }) => <MovieList {...{ ...this.props, match }} />}
+            />
+            <Route
+              path={getUrlDecodedSearchPath()}
+              render={({ match }) => <MovieList {...{ ...this.props, match }} />}
+            />
+          </ConnectedSwitch>
+          <Divider hidden />
+          <Card style={{ boxShadow: 'none' }}>
+            <CardTitle
+              className="flex-center-middle"
+              titleStyle={{ fontSize: '14px', fontWeight: 'bold' }}
+              title="Inspired by ReactJS | 2017"
+            />
+          </Card>
+          <Divider hidden />
+          <Scroller showUnder={160}>
+            <FontIcon className="material-icons" style={{ fontSize: '50px' }}>arrow_upward</FontIcon>
+          </Scroller>
+        </div>
+      </MuiThemeProvider>
     );
   }
 }

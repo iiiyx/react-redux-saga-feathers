@@ -5,6 +5,7 @@
   "dependencies": {
     "detect-passive-events": "^1.0.2",
     "feathers-client": "^2.4.0",
+    "material-ui": "^0.20.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-imageloader": "^2.1.0",
@@ -17,6 +18,7 @@
     "redux": "^3.7.2",
     "redux-devtools-extension": "^2.13.2",
     "redux-saga": "^0.15.6",
+    "roboto-fontface": "^0.8.0",
     "semantic-ui-react": "^0.73.1",
     "superagent": "^3.6.0",
     "tween-functions": "^1.2.0"
