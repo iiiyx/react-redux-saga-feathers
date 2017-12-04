@@ -1,8 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
+import configureStore from 'redux-mock-store';
+import { shallow } from 'enzyme';
+
 import App from '../components/App';
 
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
+describe('<App />', () => {
+  const initialState = {};
+  const mockStore = configureStore();
+  let store, container;
+
+  beforeEach(() => {
+    store = mockStore(initialState);
+    container = shallow(<App store={store} />);
+  });
+
+  it('renders self and ...', () => {
+    console.log(container.debug());
+  })
 });
