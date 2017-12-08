@@ -2,21 +2,22 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import configureStore from 'redux-mock-store';
-import { shallow } from 'enzyme';
+import { mount } from 'enzyme';
 
-import App from '../components/App';
+import NavBar from '../components/NavBar';
 
-describe('<App />', () => {
-  const initialState = {};
+describe('<NavBar />', () => {
+  const initialState = {
+    routing: {
+      location: { "pathname": "/", "search": "", "hash": "" }
+    }
+  };
   const mockStore = configureStore();
   let store, container;
-  const initProps = {
-    match: { "path": "/", "url": "/", "isExact": true, "params": {} }
-  };
 
   beforeEach(() => {
     store = mockStore(initialState);
-    container = shallow(<App store={store} props={initProps} />);
+    container = mount(<NavBar store={store} location={initialState.routing.location} />);
   });
 
   it('renders self and ...', () => {

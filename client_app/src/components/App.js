@@ -47,7 +47,7 @@ class App extends Component {
                 titleStyle={{ fontSize: '28px' }}
                 subtitle="Все новые сериалы и фильмы"
                 subtitleStyle={{ fontSize: '16px', fontWeight: 'normal' }}
-                avatar={<Avatar src="/150.png" size="70" backgroundColor="none" />}>
+                avatar={<Avatar src="/150.png" size={70} backgroundColor="none" />}>
               </CardHeader>
             </Card>
           </a>
